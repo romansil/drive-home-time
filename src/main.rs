@@ -1,7 +1,10 @@
 extern crate reqwest;
+extern crate time;
 
 use reqwest::Url;
 use std::env;
+use time::Duration;
+
 
 const URL: &'static str = "https://maps.googleapis.com/maps/api/distancematrix/json";
 //const URL: &'static str = "http://httpbin.org/get";
@@ -47,4 +50,8 @@ fn main() {
 
     let way = Way::new(&args);
     way.get_time();
+
+    let t = Duration::seconds(1964);
+    println!("t {:?}", t);
+    println!("t {} min", t.num_minutes());
 }

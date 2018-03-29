@@ -5,3 +5,4 @@ authors = ["Roman Silberschneider <roman.silberschneider@gmail.com>"]
 
 [dependencies]
 reqwest = "0.8.5"
+time = "0.1.39"
