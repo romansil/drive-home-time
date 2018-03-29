@@ -1,26 +1,28 @@
 extern crate reqwest;
 
 use std::io::Read;
+use reqwest::Client;
+use reqwest::Url;
 
 const URL: &'static str = "https://maps.googleapis.com/maps/api/distancematrix/json";
+//const URL: &'static str = "http://httpbin.org/get";
 
 fn main() {
-    let key = option_env!("API_KEY").unwrap();
 
     let params = [
-        ("units", "imperial"),
-        ("origins", "Washington,DC"),
-        ("destinations", "New+York+City,NY"),
-        ("key", key)
+        ("units", "metric"),
+        ("origins", "New York"),
+        ("destinations", "Washington DC"),
+        //("key", option_env!("API_KEY").unwrap())
     ];
-    let client = reqwest::Client::new();
-    let mut res = client.get(URL)
-        .form(&params)
-        .send()
-        .unwrap();
+
+    let url = Url::parse_with_params(URL, &params).unwrap();
+
+    let client = Client::new();
+    let mut res = client.get(url).send().unwrap();
 
     //println!("res: {:?}", res);
-    let mut buf = String::new();
-    res.read_to_string(&mut buf).expect("Failed to read response");
-    println!("{}", buf);
+    let mut res_txt = String::new();
+    res.read_to_string(&mut res_txt).unwrap();
+    println!("{}", res_txt);
 }
