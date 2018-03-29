@@ -25,7 +25,7 @@ impl Way {
         Way { src, dst }
     }
 
-    fn get_time(self) {
+    fn get_time(self) -> Duration {
 
         let params = [
             ("units", "metric"),
@@ -36,11 +36,13 @@ impl Way {
 
         let url = Url::parse_with_params(URL, &params).unwrap();
         let res = reqwest::get(url).unwrap().text().unwrap();
-        println!("res: {}", res);
+        //println!("res: {}", res);
 
         let jobj = json::parse(res.as_str()).unwrap();
         let duration = &jobj["rows"][0]["elements"][0]["duration"]["value"];
-        println!("time: {:?}", duration);
+        //println!("time: {:?}", duration);
+
+        Duration::seconds(duration.as_i64().unwrap())
     }
 }
 
@@ -54,9 +56,8 @@ fn main() {
     }
 
     let way = Way::new(&args);
-    way.get_time();
+    let t = way.get_time();
 
-    let t = Duration::seconds(1964);
-    println!("t {:?}", t);
-    println!("t {} min", t.num_minutes());
+    //println!("t {:?}", t);
+    println!("{} min", t.num_minutes());
 }
