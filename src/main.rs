@@ -1,5 +1,6 @@
 extern crate reqwest;
 extern crate time;
+extern crate json;
 
 use reqwest::Url;
 use std::env;
@@ -36,6 +37,10 @@ impl Way {
         let url = Url::parse_with_params(URL, &params).unwrap();
         let res = reqwest::get(url).unwrap().text().unwrap();
         println!("res: {}", res);
+
+        let jobj = json::parse(res.as_str()).unwrap();
+        let duration = &jobj["rows"][0]["elements"][0]["duration"]["value"];
+        println!("time: {:?}", duration);
     }
 }
 
