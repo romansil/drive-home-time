@@ -5,6 +5,8 @@ extern crate json;
 use reqwest::Url;
 use std::env;
 use time::Duration;
+use std::time::{SystemTime, UNIX_EPOCH};
+
 
 
 const URL: &'static str = "https://maps.googleapis.com/maps/api/distancematrix/json";
@@ -27,11 +29,20 @@ impl Way {
 
     fn get_time(self) -> Duration {
 
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        //println!("timestamp {}", timestamp);
+        let timestamp = format!("{}", timestamp);
+
         let params = [
             ("units", "metric"),
             ("origins", self.src.as_str()),
             ("destinations", self.dst.as_str()),
-            //("key", option_env!("API_KEY").unwrap())
+            ("departure_time", timestamp.as_str()),
+            ("traffic_model", "pessimistic"),
+            ("key", option_env!("API_KEY").unwrap())
         ];
 
         let url = Url::parse_with_params(URL, &params).unwrap();
@@ -39,7 +50,8 @@ impl Way {
         //println!("res: {}", res);
 
         let jobj = json::parse(res.as_str()).unwrap();
-        let duration = &jobj["rows"][0]["elements"][0]["duration"]["value"];
+        let duration = &jobj["rows"][0]["elements"][0]
+            ["duration_in_traffic"]["value"];
         //println!("time: {:?}", duration);
 
         Duration::seconds(duration.as_i64().unwrap())
